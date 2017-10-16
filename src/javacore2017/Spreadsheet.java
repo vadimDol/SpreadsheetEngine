@@ -77,12 +77,16 @@ public class Spreadsheet {
         }
     }
 
+
     private Double getValueVariable(String variable){
         Double value;
         if(mTable.containsKey(variable.charAt(0))) {
             TreeMap<Integer, String> col = mTable.get(variable.charAt(0));
             if(col.containsKey(Integer.parseInt("" + variable.charAt(1)))) {
                 String valueStr = col.get(Integer.parseInt("" + variable.charAt(1)));
+                if(valueStr.split(" ")[0].equals("formula")) {
+                    return calculation(valueStr.substring(valueStr.split(" ")[0].length(), valueStr.length()));
+                }
                 value = (!isDouble(valueStr)) ? Double.NaN : Double.parseDouble(valueStr);
             }else {
                 value = Double.NaN;
