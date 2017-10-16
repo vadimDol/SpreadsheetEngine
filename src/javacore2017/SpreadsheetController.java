@@ -86,27 +86,43 @@ public class SpreadsheetController extends ParserString {
         if(!isCorrectFormula(token)) {
             throw new Exception("Некорректная формула!");
         }
-        mSpreadsheet.setFormula(pair, token[2]);
+        mSpreadsheet.setFormula(pair, "formula " + token[2]);
         System.out.println("OK");
     }
 
-    private boolean isCorrectFormula(String[] token) {
+    private static  boolean isInteger (String s)
+    {
+        try
+        {
+            Integer.parseInt(s);//converts the string into an integer
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+    private boolean isCorrectFormula(String[] token) throws  Exception{
         String formula = token[2].replaceAll("\\(|\\)|\\[|\\]", " ");
 
-        String[] prefixStr = formula.split(" ");
+        String[] prefixStrArray = formula.split(" ");
         Stack<String> stack = new Stack<String>();
-        for(int i = prefixStr.length-1; i > -1; i--){
-            String s = prefixStr[i];
-            if(s.equals("")){
+        for(int i = prefixStrArray.length-1; i > -1; i--){
+            String prefixStr = prefixStrArray[i];
+            if(prefixStr.equals("")){
                 continue;
             }
-            if(s.equals("+") || s.equals("/") || s.equals("*") || s.equals("-")) {
+            if(prefixStr.equals("+") || prefixStr.equals("/") || prefixStr.equals("*") || prefixStr.equals("-")) {
                 if(stack.size() < 2){
                     return false;
                 }
                 stack.push(stack.pop() + stack.pop());
             } else {
-                stack.push(s);
+                if(!isInteger(prefixStr)) {
+                    getVariableInfo(prefixStr);
+                }
+                stack.push(prefixStr);
             }
         }
         if((stack.pop() != null) && (stack.size() != 0)) {
